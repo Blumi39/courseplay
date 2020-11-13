@@ -103,10 +103,6 @@ function CombineUnloadAIDriver:init(vehicle)
 	self.combineToUnloadReversing = 0
 end
 
-function CombineUnloadAIDriver:postSync()
-	self.assignedCombinesSetting:sendPostSyncRequestEvent()
-end
-
 function CombineUnloadAIDriver:getAssignedCombines()
 	return self.assignedCombinesSetting:getData()
 end

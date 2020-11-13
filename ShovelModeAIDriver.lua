@@ -319,7 +319,7 @@ function ShovelModeAIDriver:driveIntoSilo(dt)
 		refSpeed = math.min(10,self.refSpeed)
 	end
 
-	if vehicle.cp.shovelStopAndGo and self:getFillLevelDoesChange() then
+	if vehicle.cp.settings.shovelStopAndGo:is(true) and self:getFillLevelDoesChange() then
 		allowedToDrive = false;
 	end
 

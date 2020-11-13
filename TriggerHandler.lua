@@ -178,10 +178,27 @@ function TriggerHandler:onContinue()
 end
 
 function TriggerHandler:writeUpdateStream(streamId)
-	streamWriteString(streamId,self.loadingState.name)
+	if self.loadingState ~= self.loadingStateSend then
+		streamWriteBool(streamId,true)
+		streamWriteString(streamId,self.loadingState.name)
+		self.loadingStateSend = self.loadingState
+	else 
+		streamWriteBool(streamId,false)
+	end
 end
 
 function TriggerHandler:readUpdateStream(streamId)
+	if streamReadBool(streamId) then
+		local nameState = streamReadString(streamId)
+		self.loadingState = self.states[nameState]
+	end
+end
+
+function TriggerHandler:onWriteStream(streamId)
+	streamWriteString(streamId,self.loadingState.name)
+end
+
+function TriggerHandler:onReadStream(streamId)
 	local nameState = streamReadString(streamId)
 	self.loadingState = self.states[nameState]
 end

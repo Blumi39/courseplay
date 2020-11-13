@@ -303,6 +303,13 @@ function FieldworkAIDriver:writeUpdateStream(streamId, connection, dirtyMask)
 		streamWriteIntN(streamId,self.convoyCurrentPosition,5)
 		streamWriteIntN(streamId,self.convoyTotalMembers,5)
 	end
+	if self.fieldworkState and self.fieldworkState ~= self.fieldworkStateSend then
+		streamWriteBool(streamId,true)
+		streamWriteString(streamId,self.fieldworkState.name)
+		self.fieldworkStateSend = self.fieldworkState
+	else 
+		streamWriteBool(streamId,false)
+	end
 	AIDriver.writeUpdateStream(self,streamId, connection, dirtyMask)
 end 
 
@@ -312,7 +319,29 @@ function FieldworkAIDriver:readUpdateStream(streamId, timestamp, connection)
 		self.convoyCurrentPosition=streamReadIntN(streamId,5)
 		self.convoyTotalMembers=streamReadIntN(streamId,5)
 	end
+	if streamReadBool(streamId) then
+		local nameState = streamReadString(streamId)
+		self.fieldworkState = self.states[nameState]
+	end	
 	AIDriver.readUpdateStream(self,streamId, timestamp, connection)
+end
+
+function FieldworkAIDriver:onWriteStream(streamId)
+	if self.fieldworkState then
+		streamWriteBool(streamId,true)
+		streamWriteString(streamId,self.fieldworkState.name)
+	else 
+		streamWriteBool(streamId,false)
+	end
+	AIDriver.onWriteStream(self,streamId)
+end
+
+function FieldworkAIDriver:onReadStream(streamId)
+	if streamReadBool(streamId) then
+		local nameState = streamReadString(streamId)
+		self.fieldworkState = self.states[nameState]
+	end
+	AIDriver.onReadStream(self,streamId)
 end
 
 function FieldworkAIDriver:drive(dt)

@@ -1178,8 +1178,8 @@ function courseplay.hud:updatePageContent(vehicle, page)
 						vehicle.cp.hud.content.pages[page][i][2].text = texts[i]
 					end
 
-					vehicle.cp.hud.content.pages[page][5][1].text = courseplay:loc('COURSEPLAY_SHOVEL_STOP_AND_GO');
-					vehicle.cp.hud.content.pages[page][5][2].text = vehicle.cp.shovelStopAndGo and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
+					vehicle.cp.hud.content.pages[page][5][1].text = vehicle.cp.settings.shovelStopAndGo:getLabel()
+					vehicle.cp.hud.content.pages[page][5][2].text = vehicle.cp.settings.shovelStopAndGo:getText()
 					
 					vehicle.cp.hud.content.pages[page][6][1].text = courseplay:loc('COURSEPLAY_WORK_WIDTH');
 					vehicle.cp.hud.content.pages[page][6][2].text = vehicle.cp.workWidth ~= nil and string.format('%.1fm', vehicle.cp.workWidth) or '---';
@@ -2453,7 +2453,7 @@ function courseplay.hud:setShovelModeAIDriverContent(vehicle)
 	--page 9
 	self:enablePageButton(vehicle, 9)
 	self:setupToolPositionButtons(vehicle,vehicle.cp.settings.frontloaderToolPositions,9,1)
-	self:addRowButton(vehicle,nil,'toggleShovelStopAndGo', 9, 5, 1 )
+	self:addRowButton(vehicle,vehicle.cp.settings.shovelStopAndGo,'toggle', 9, 5, 1 )
 end
 
 function courseplay.hud:setLevelCompactAIDriverContent(vehicle)

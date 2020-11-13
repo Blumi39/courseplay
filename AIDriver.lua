@@ -193,25 +193,42 @@ end
 
 function AIDriver:writeUpdateStream(streamId, connection, dirtyMask)
 	self.triggerHandler:writeUpdateStream(streamId)
-	streamWriteString(streamId,self.state.name)
-	if self.active then 
+	if self.state ~= self.stateSend then 
 		streamWriteBool(streamId,true)
+		streamWriteString(streamId,self.state.name)
+		self.stateSend = self.state
 	else 
 		streamWriteBool(streamId,false)
 	end
---	streamWriteBool(streamId,self.vehicle.cp.isDriving)
+	if self.active ~= self.activeSend then 
+		streamWriteBool(streamId,true)
+		streamWriteBool(streamId,self.active or false)
+		self.activeSend = self.active
+	else
+		streamWriteBool(streamId,false)
+	end
 end 
 
 function AIDriver:readUpdateStream(streamId, timestamp, connection)
 	self.triggerHandler:readUpdateStream(streamId)
+	if streamReadBool(streamId) then
+		local nameState = streamReadString(streamId)
+		self.state = self.states[nameState]
+	end
+	if streamReadBool(streamId) then
+		self.active = streamReadBool(streamId)
+	end
+end
+
+function AIDriver:onWriteStream(streamId)
+	streamWriteString(streamId,self.state.name)
+	streamWriteBool(streamId,self.active or false)
+end
+
+function AIDriver:onReadStream(streamId)
 	local nameState = streamReadString(streamId)
 	self.state = self.states[nameState]
 	self.active = streamReadBool(streamId)
---	self.vehicle.cp.isDriving = streamReadBool(streamId)
-end
-
-function AIDriver:postSync()
-
 end
 
 function AIDriver:setHudContent()
